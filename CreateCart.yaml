@@ -1,0 +1,131 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title: CreateCart
+  description: 'This API helps us to create cart when any user who is logged in adds a product in cart'
+host: euw1-partner02-test.apigee.net
+basePath: /apis/v1
+securityDefinitions:
+  auth:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: https://euw1-partner02-test.apigee.net/apis/v1
+    scopes: {}
+    x-skip-client-authentication: false
+schemes:
+- https
+consumes:
+- application/json
+produces:
+- application/json
+paths:
+  /carts:
+    post:
+      description: 'Creates cart for the user who is logged in'
+      summary: CreateCart
+      operationId: CartsPost
+      produces:
+      - application/json
+      parameters:
+      - name: Body
+        in: body
+        required: true
+        description: 'request  body for creating cart'
+        schema:
+          $ref: '#/definitions/CreateCartRequest'
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: 'token for authorization'
+      responses:
+        200:
+          description: 'Success'
+        500:
+          description: 'Internal Server Error'
+        400:
+          description: 'Bad Input'
+      security:
+      - auth: []
+      x-unitTests:
+      - request:
+          method: POST
+          uri: /carts
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer uGqE7MKp0df1yUWRGlTx1kQxZeNI
+          body: '{"cart_details": {"session_id": "abc", "cart_items": [{"quantity": 1, "sku_id": "S40330686"}] }}'
+        expectedResponse:
+          x-allowExtraHeaders: true
+          x-bodyMatchMode: NONE
+          x-arrayOrderedMatching: false
+          x-arrayCheckCount: false
+          x-matchResponseSchema: true
+          headers: {}
+        x-testShouldPass: true
+        x-testEnabled: true
+        x-testName: CreateCart
+        x-testDescription: ''
+      x-operation-settings:
+        CollectParameters: false
+        AllowDynamicQueryParameters: false
+        AllowDynamicFormParameters: false
+        IsMultiContentStreaming: false
+definitions:
+  CreateCartRequest:
+    title: CreateCartRequest
+    example:
+      cart_details:
+        session_id: abc
+        cart_items:
+        - quantity: 1
+          sku_id: S40330686
+    type: object
+    properties:
+      cart_details:
+        $ref: '#/definitions/CartDetails'
+    required:
+    - cart_details
+  CartDetails:
+    title: CartDetails
+    example:
+      session_id: abc
+      cart_items:
+      - quantity: 1
+        sku_id: S40330686
+    type: object
+    properties:
+      session_id:
+        description: 'session id of the user logged in'
+        example: session-t-7r64gfh6
+        type: string
+      cart_items:
+        description: 'array of items added to cart'
+        example:
+        - quantity: 1
+          sku_id: S40330686
+        type: array
+        items:
+          $ref: '#/definitions/CartItem'
+    required:
+    - session_id
+    - cart_items
+  CartItem:
+    title: CartItem
+    example:
+      quantity: 1
+      sku_id: S40330686
+    type: object
+    properties:
+      quantity:
+        description: 'number of items added to cart'
+        example: 1
+        type: integer
+        format: int32
+      sku_id:
+        description: 'sku id of the product'
+        example: S40330686
+        type: string
+    required:
+    - quantity
+    - sku_id
